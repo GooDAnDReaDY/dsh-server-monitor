@@ -4,7 +4,7 @@
 
 - Purpose: show current read-only status for user-configured Linux servers inside DSH.
 - Audience: DSH users who need a compact operational view of their own servers.
-- Status: MVP implementation in progress.
+- Status: MVP implementation complete; release candidate acceptance pending.
 - Refresh: every 15 seconds while the sidebar is visible.
 
 ## User Surfaces
@@ -14,7 +14,7 @@
 - Settings: settings.plugin.item card for this plugin's own server profiles.
 - API: trusted same-origin snapshot reads plus profile-management routes. Snapshot collection is single-flight and capped at one start per profile per 15 seconds; save/delete invalidates that profile cache.
 - Actions: profile add/edit/delete/test only; monitored server actions are out of scope.
-- Documentation: English and Chinese public documentation; Russian via dsh-russian-lang.
+- Documentation: English, Chinese, and Russian project guides; UI is English/Chinese with Russian translations supplied by dsh-russian-lang.
 
 ## Visual Direction
 
