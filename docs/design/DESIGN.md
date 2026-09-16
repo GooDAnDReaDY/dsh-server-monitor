@@ -12,7 +12,7 @@
 - Web/UI: native DSH right sidebar monitoring tab.
 - Legacy UI: optional dsh-better-sidebar tab when native sidebar services are unavailable.
 - Settings: settings.plugin.item card for this plugin's own server profiles.
-- API: plugin-local read-only snapshot and profile-management routes.
+- API: trusted same-origin snapshot reads plus profile-management routes. Snapshot collection is single-flight and capped at one start per profile per 15 seconds; save/delete invalidates that profile cache.
 - Actions: profile add/edit/delete/test only; monitored server actions are out of scope.
 - Documentation: English and Chinese public documentation; Russian via dsh-russian-lang.
 
@@ -54,12 +54,20 @@
 
 ## Do / Don't
 
-- Do keep credentials inside this plugin's vault and never serialize secret values to the browser.
+- Do keep credentials inside this plugin's vault, verify POSIX mode `0600`, and never serialize secret values to the browser.
+- Do register locale dictionaries inside a Cordis effect and dispose them with the plugin lifecycle. Use the DSH locale binding for every visible UI label so external locale packs can translate the plugin.
 - Do bound remote commands and cap process/container/port output.
 - Do pause polling when the document is hidden.
 - Don't modify, stop, restart or kill remote processes/containers.
 - Don't depend on dsh-remote-workspace settings, services or installed package.
 - Don't show a blank dashboard when only one metric section is unavailable.
+
+## API And Security
+
+- Both state and snapshot GET routes require the existing trusted-request check before reading profile data or starting SSH.
+- Snapshot responses contain metrics only; secrets remain inside the server-side vault and collector boundary.
+- Per-profile snapshots and collector failures are cached for 15 seconds from collection start; concurrent requests share one in-flight collection.
+- Secret-vault writes require verified owner-only POSIX permissions (`0600`) and fail visibly when enforcement fails.
 
 ## Locked Design Decisions
 
