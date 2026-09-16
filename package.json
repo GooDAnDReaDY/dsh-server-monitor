@@ -1,0 +1,61 @@
+{
+  "name": "@goodandready/dsh-server-monitor",
+  "version": "0.1.0",
+  "description": "Standalone read-only Linux server monitoring sidebar for DeepSeek Harness",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "server-monitor",
+    "linux",
+    "ssh"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GooDAnDReaDY/dsh-server-monitor.git"
+  },
+  "homepage": "https://github.com/GooDAnDReaDY/dsh-server-monitor#readme",
+  "bugs": {
+    "url": "https://github.com/GooDAnDReaDY/dsh-server-monitor/issues"
+  },
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-locale", "@deepseek-ai/dsh-client-ui-settings"]
+    }
+  },
+  "dependencies": {
+    "ssh2": "^1.17.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-host-webserver": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-settings": "^0.1.0-rc.6",
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
