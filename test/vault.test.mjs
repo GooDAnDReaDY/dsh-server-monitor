@@ -42,3 +42,19 @@ test('creates an owner-only vault file', () => {
   vault.setProfileSecrets('p1', { password: 'secret' });
   assert.equal(fs.statSync(file).mode & 0o777, 0o600);
 });
+
+test('fails visibly when owner-only vault permissions cannot be verified', (t) => {
+  if (process.platform === 'win32') return t.skip('POSIX mode bits are required for this permission check');
+  const file = tempVault();
+  fs.writeFileSync(file, 'existing', { mode: 0o644 });
+  t.mock.method(fs, 'chmodSync', () => {});
+  assert.throws(() => new VaultService(file), /permissions.*0600/i);
+});
+
+test('does not write secrets when vault permission changes are denied', (t) => {
+  if (process.platform === 'win32') return t.skip('POSIX mode bits are required for this permission check');
+  const file = tempVault();
+  t.mock.method(fs, 'chmodSync', () => { throw new Error('permission denied'); });
+  assert.throws(() => new VaultService(file), /permissions.*0600/i);
+  assert.equal(fs.readFileSync(file, 'utf8').includes('permission denied'), false);
+});
