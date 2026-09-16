@@ -14,13 +14,13 @@ Phase 3 — implementation and verification
 - [done] TDD for profile schema, vault and SSH service
 - [done] TDD for Linux snapshot collector and API
 - [done] Native/legacy sidebar UI and localization
-- [in_progress] Full verification and package audit
-- [pending] MiniPC isolated install, visual QA and cleanup
-- [pending] PR/merge/deploy readiness report
+- [done] Full verification and package audit
+- [done] MiniPC isolated install, DSH smoke and cleanup
+- [in_progress] PR/merge/deploy readiness report
 
 ## Next Step
 
-Run isolated MiniPC package installation, DSH smoke checks and visual acceptance; then commit and push the completed candidate.
+Commit and push the final UI adjustment, then prepare the internal Gitea PR/readiness report. Do not publish or deploy.
 
 ## Decisions
 
