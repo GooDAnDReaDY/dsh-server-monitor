@@ -24,6 +24,7 @@
   "keywords": [
     "dsh",
     "dsh-plugin",
+    "deepseek-harness",
     "server-monitor",
     "linux",
     "ssh"
@@ -43,7 +44,10 @@
     },
     "client": {
       "platform": "web",
-      "inject": ["@deepseek-ai/dsh-client-locale", "@deepseek-ai/dsh-client-ui-settings"]
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
     }
   },
   "dependencies": {

@@ -146,3 +146,4 @@ docs/research/
 docs/testing/
 openwiki/
 *.out
+.worktrees/
