@@ -33,3 +33,11 @@ test('truncates oversized remote output without throwing', async () => {
   assert.equal(result.stdout, '1234');
   assert.equal(result.truncated, true);
 });
+
+test('best-effort SSH cleanup logs close failures without interrupting teardown', () => {
+  const logged = [];
+  const service = new SshService({ logger: { debug: (...args) => logged.push(args) } });
+  assert.doesNotThrow(() => service.bestEffort('close connection', () => { throw new Error('socket closed'); }));
+  assert.equal(logged.length, 1);
+  assert.match(logged[0][0], /close connection/);
+});
