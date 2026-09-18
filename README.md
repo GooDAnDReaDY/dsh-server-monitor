@@ -131,6 +131,7 @@ flowchart LR
 | `lib/vault-service.js` | Credential storage and POSIX permission verification. |
 | `lib/ssh-service.js` | SSH authentication, bounded commands, reuse and cleanup. |
 | `lib/linux-collector.js` | Linux collection and snapshot parsing. |
+| `lib/plugin-updater.js` | Version checking and one-click in-card plugin updates. |
 
 ## Internal HTTP routes
 
@@ -140,6 +141,8 @@ These DSH-client routes are protected by a trusted-request check; they are not a
 | --- | --- | --- |
 | GET | `/dsh-server-monitor/state` | Sanitized profiles and selected ID. |
 | GET | `/dsh-server-monitor/snapshot?profileId=<id>` | Current snapshot; defaults to active profile. |
+| GET | `/dsh-server-monitor/update` | Current and latest version status. |
+| POST | `/dsh-server-monitor/update` | Run one-click plugin update via DSH CLI. |
 | POST | `/dsh-server-monitor/profiles/save` | Create/update a profile. |
 | POST | `/dsh-server-monitor/profiles/delete` | Delete profile and stored secrets. |
 | POST | `/dsh-server-monitor/profiles/active` | Select active profile. |
