@@ -41,13 +41,14 @@ A standalone, read-only Linux server monitor for the DeepSeek Harness sidebar. T
 
 - Add and manage multiple Linux SSH profiles.
 - Connect with an SSH private key (inline or server-side key path) or password authentication.
+- Generate Ed25519 SSH keys directly in the UI, copy a ready-to-use setup command for target servers, and verify the connection.
 - Show current host, CPU, memory, swap, disk, process, container, network, and listening-port data.
 - Refresh every 15 seconds while the sidebar is visible.
 - Read-only monitoring: the plugin does not manage remote services, processes, or containers. History, charts, and alerts are not part of the MVP.
 
 ## Credential boundary
 
-Credentials belong to this plugin and are stored in its private vault on the DSH host. On POSIX hosts the plugin enforces and verifies owner-only mode `0600`, and stops if that permission cannot be established. Secret values are not written to DSH settings or returned to the browser; profile APIs expose only masked values and presence flags. A configured private-key path is read on the DSH host.
+Credentials belong to this plugin and are stored in its private vault on the DSH host. On POSIX hosts the plugin enforces and verifies owner-only mode `0600`, and stops if that permission cannot be established. SSH keys generated via the UI are saved to `~/.dsh/keys/id_ed25519_dsh` (directory `0700`, file `0600`). Secret values and private keys are never written to DSH settings or returned to the browser; profile APIs expose only masked values and presence flags. A configured private-key path is read on the DSH host.
 
 ## Development checks
 
@@ -97,6 +98,12 @@ Manage profiles in the DSH settings card. Settings contain connection metadata o
 
 The settings card stores secret values in the plugin-owned vault on the DSH host. POSIX vault operations require verified owner-only permissions (`0600`).
 
+### SSH key generation and sharing with other plugins
+
+You can generate a dedicated Ed25519 keypair directly from the settings card by clicking **Generate SSH key**. The private key is saved on the DSH host at `~/.dsh/keys/id_ed25519_dsh` (mode `0600`). The UI displays the public key and a one-line setup command to paste on your target server. Once executed, click **Command ran — test connection** to test connectivity immediately.
+
+This key path can also be configured in other local plugins such as `dsh-remote-workspace` to share the same management key without duplicating credentials.
+
 ## Collected data
 
 The bounded, read-only collector reports host/OS/kernel/CPU, load and uptime, memory and swap, mounted filesystem usage, up to 12 CPU-heavy processes, running Docker or Podman containers, network byte/packet counters, and listening TCP/UDP ports (`ss`, falling back to `netstat`). A section can be empty if a command, runtime, or permission is unavailable.
@@ -136,6 +143,7 @@ These DSH-client routes are protected by a trusted-request check; they are not a
 | POST | `/dsh-server-monitor/profiles/save` | Create/update a profile. |
 | POST | `/dsh-server-monitor/profiles/delete` | Delete profile and stored secrets. |
 | POST | `/dsh-server-monitor/profiles/active` | Select active profile. |
+| POST | `/dsh-server-monitor/keys/generate` | Generate Ed25519 keypair in `~/.dsh/keys` (0600) and return public key + setup command. |
 | POST | `/dsh-server-monitor/test` | Test SSH connection. |
 
 Snapshots are cached per profile for 15 seconds from collection start; concurrent requests share a collection. Save/delete invalidates that profile’s cache.
