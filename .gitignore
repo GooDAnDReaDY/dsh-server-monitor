@@ -138,3 +138,18 @@ dist
 
 *.out
 .worktrees/
+
+# Private development and operational documentation (kept locally on disk, untracked in Git)
+.planning/
+AGENTS.md
+index.md
+docs/architecture/
+docs/plans/
+docs/research/
+docs/testing/
+openwiki/
+*.out
+*.tgz
+deploy.sh
+publish.sh
+.worktrees/
