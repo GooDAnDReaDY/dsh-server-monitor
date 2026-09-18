@@ -1,7 +1,39 @@
-# @goodandready/dsh-server-monitor
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![npm version](https://img.shields.io/npm/v/@goodandready/dsh-server-monitor)
-[English](README.md) · [简体中文](README.zh.md) · [Русский](README.ru.md)
+# 📦 @goodandready/dsh-server-monitor
+
+<div align="center">
+
+<h3>Автономный read-only монитор Linux-серверов для DeepSeek Harness</h3>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@goodandready/dsh-server-monitor"><img src="https://img.shields.io/npm/v/@goodandready/dsh-server-monitor.svg?style=for-the-badge&color=6366f1&labelColor=1e1b4b" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/GooDAnDReaDY/dsh-server-monitor.svg?style=for-the-badge&color=10b981&labelColor=064e3b" alt="license"></a>
+  <a href="https://github.com/topics/dsh-plugin"><img src="https://img.shields.io/badge/DSH-Plugin-8b5cf6.svg?style=for-the-badge&labelColor=2e1065" alt="DSH Plugin"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-20%2B-f59e0b.svg?style=for-the-badge&labelColor=451a03" alt="Node version"></a>
+</p>
+
+<p align="center">
+  <a href="https://goodandready.app/"><img src="https://img.shields.io/badge/Все_проекты_автора-goodandready.app-ff4500.svg?style=for-the-badge&logo=rocket&logoColor=white&labelColor=1a1a2e" alt="Все проекты автора"></a>
+</p>
+
+<p align="center">
+  <a href="README.md"><b>🇬🇧 English</b></a> •
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a>
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      ⭐ <strong>Если плагин вам полезен, поставьте звёздочку на GitHub</strong> — это показывает востребованность решения и мотивирует развивать проект дальше.
+      <br><br>
+      🐛 <strong>Если вы нашли ошибку или хотите предложить улучшение</strong>, создайте issue на GitHub на любом языке — предложения рассматриваются для будущих версий плагина.
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
 
 Независимый плагин мониторинга Linux-серверов только для чтения в боковой панели DeepSeek Harness. Он хранит собственные профили и учётные данные и не зависит от `dsh-remote-workspace` или подключений других плагинов.
 

@@ -1,7 +1,39 @@
-# @goodandready/dsh-server-monitor
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![npm version](https://img.shields.io/npm/v/@goodandready/dsh-server-monitor)
-[English](README.md) · [简体中文](README.zh.md) · [Русский](README.ru.md)
+# 📦 @goodandready/dsh-server-monitor
+
+<div align="center">
+
+<h3>用于 DeepSeek Harness 侧边栏的独立只读 Linux 服务器监控器</h3>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@goodandready/dsh-server-monitor"><img src="https://img.shields.io/npm/v/@goodandready/dsh-server-monitor.svg?style=for-the-badge&color=6366f1&labelColor=1e1b4b" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/GooDAnDReaDY/dsh-server-monitor.svg?style=for-the-badge&color=10b981&labelColor=064e3b" alt="license"></a>
+  <a href="https://github.com/topics/dsh-plugin"><img src="https://img.shields.io/badge/DSH-Plugin-8b5cf6.svg?style=for-the-badge&labelColor=2e1065" alt="DSH Plugin"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-20%2B-f59e0b.svg?style=for-the-badge&labelColor=451a03" alt="Node version"></a>
+</p>
+
+<p align="center">
+  <a href="https://goodandready.app/"><img src="https://img.shields.io/badge/作者作品展厅-goodandready.app-ff4500.svg?style=for-the-badge&logo=rocket&logoColor=white&labelColor=1a1a2e" alt="GoodAndReady 作品展厅"></a>
+</p>
+
+<p align="center">
+  <a href="README.md"><b>🇬🇧 English</b></a> •
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a>
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      ⭐ <strong>如果您觉得本插件对您有所帮助，请在 GitHub 上点亮 Star</strong> — 这能让我看到插件的实际价值，并激励我持续维护和完善它。
+      <br><br>
+      🐛 <strong>如果您在使用中遇到问题或有任何功能建议</strong>，欢迎随时在 GitHub 提交 Issue（支持任意语言）— 我会认真阅读每一条反馈并在后续版本中积极采纳。
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
 
 适用于 DeepSeek Harness 侧边栏的独立、只读 Linux 服务器监控插件。插件自行管理服务器配置和凭据，不依赖 `dsh-remote-workspace`，也不会复用其他插件的连接配置。
 
