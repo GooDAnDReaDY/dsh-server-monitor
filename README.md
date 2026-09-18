@@ -1,7 +1,39 @@
-# @goodandready/dsh-server-monitor
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![npm version](https://img.shields.io/npm/v/@goodandready/dsh-server-monitor)
-[English](README.md) · [简体中文](README.zh.md) · [Русский](README.ru.md)
+# 📦 @goodandready/dsh-server-monitor
+
+<div align="center">
+
+<h3>Standalone Read-Only Linux Server Monitor for DeepSeek Harness</h3>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@goodandready/dsh-server-monitor"><img src="https://img.shields.io/npm/v/@goodandready/dsh-server-monitor.svg?style=for-the-badge&color=6366f1&labelColor=1e1b4b" alt="npm version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/GooDAnDReaDY/dsh-server-monitor.svg?style=for-the-badge&color=10b981&labelColor=064e3b" alt="license"></a>
+  <a href="https://github.com/topics/dsh-plugin"><img src="https://img.shields.io/badge/DSH-Plugin-8b5cf6.svg?style=for-the-badge&labelColor=2e1065" alt="DSH Plugin"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-20%2B-f59e0b.svg?style=for-the-badge&labelColor=451a03" alt="Node version"></a>
+</p>
+
+<p align="center">
+  <a href="https://goodandready.app/"><img src="https://img.shields.io/badge/Author's_Showcase-goodandready.app-ff4500.svg?style=for-the-badge&logo=rocket&logoColor=white&labelColor=1a1a2e" alt="GoodAndReady Showcase"></a>
+</p>
+
+<p align="center">
+  <a href="README.md"><b>🇬🇧 English</b></a> •
+  <a href="README.zh.md"><b>🇨🇳 中文说明</b></a> •
+  <a href="README.ru.md"><b>🇷🇺 Русский</b></a>
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      ⭐ <strong>If you like this plugin, please star it on GitHub</strong> — it shows me that the plugin is useful to you and motivates me to keep developing it.
+      <br><br>
+      🐛 <strong>If you find a bug or would like to request a feature</strong>, open a GitHub issue in any language — I will review your proposal and implement useful suggestions in a future plugin version.
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
 
 A standalone, read-only Linux server monitor for the DeepSeek Harness sidebar. This package owns its server profiles and credentials; it does not depend on `dsh-remote-workspace` or reuse another plugin’s connection settings.
 
@@ -114,3 +146,7 @@ The plugin owns its SSH credentials, never returns secrets to the browser, and o
 
 - Issues: [GitHub Issues](https://github.com/GooDAnDReaDY/dsh-server-monitor/issues)
 - License: [MIT](LICENSE)
+
+## Visual verification
+
+![DSH Server Monitor visual verification](media/visual-verification.png)
