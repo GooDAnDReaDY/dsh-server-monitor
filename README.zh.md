@@ -69,6 +69,9 @@ npm test
 - 已安装插件的 DSH web 配置，且 DSH 主机可通过 SSH 访问 Linux 服务器。
 - 远程账户可运行常见只读系统命令；容器数据需要有权查询 Docker/Podman。
 - 私钥路径必须指向 DSH 主机上可由 DSH 服务账户读取的文件。
+- **运行依赖 (`ssh2`)**：插件需要 `ssh2` (`^1.17.0`) 运行时依赖（位于 `dependencies`，而非 peer）以管理 SSH 会话和生成 Ed25519 密钥对。通过包管理器安装插件时会自动拉取。
+- **纯 JavaScript 回退（Pure JS Fallback）**：DSH 主机上无需安装 C/C++ 编译器或 Python 构建工具链。虽然 `ssh2` 包含可选的原生加速模块（`cpu-features`、`sshcrypto`），但在缺少构建环境时会自动无缝回退到纯 JavaScript 实现。
+- **离线环境部署（Air-Gapped）**：若在离线网络环境中通过 `.tgz` 包安装，请确保预先在本地包管理器缓存或私有 npm 镜像中提供 `ssh2` 及其传递依赖项。
 
 ## 安装
 

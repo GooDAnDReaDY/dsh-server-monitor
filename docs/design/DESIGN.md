@@ -77,6 +77,14 @@
 - Secret-vault and key writes require verified owner-only POSIX permissions (`0600`) and fail visibly when enforcement fails.
 - Plugin update route `GET /dsh-server-monitor/update` provides current and latest versions; `POST /dsh-server-monitor/update` initiates atomic CLI upgrade with execution timeout.
 
+## Dependencies And Runtime Requirements
+
+- **Runtime Dependency (`ssh2`)**: Unlike most DSH plugins that only declare `peerDependencies` provided by the DSH host kernel, `dsh-server-monitor` declares a direct runtime dependency on `ssh2` (`^1.17.0`).
+  - *Purpose*: Handles SSH2 protocol connections, stream multiplexing, bounded command execution, and modern Ed25519 keypair generation via `ssh2.utils.generateKeyPairSync`.
+  - *Pure JavaScript Fallback*: `ssh2` contains optional native bindings (`cpu-features`, `sshcrypto`) for crypto performance optimization. On hosts lacking build tools (gcc/clang, make, python), npm/pnpm skips native compilation and `ssh2` executes reliably in pure JavaScript mode. No build tools are mandated on the host.
+  - *Packaging Boundary*: In accordance with standard npm packaging, `package.json` specifies `"files": ["lib/", "cordis.patch.yml", "README.md", "README.zh.md", "README.ru.md", "LICENSE"]`. `node_modules` is excluded from the published tarball; dependencies are resolved and fetched from the registry at install time.
+  - *Offline / Air-Gapped Strategy*: For air-gapped DSH installations, `ssh2` and its transitive dependencies must be pre-populated in the local pnpm/npm store or provided by a private artifact repository.
+
 ## Locked Design Decisions
 
 - 2026-09-16 — Separate plugin-owned profiles and credentials; reason: plugins are independent and must not share connection ownership.
@@ -86,3 +94,5 @@
 - 2026-09-18 — Интегрированная генерация SSH-ключа в UI: создание пары Ed25519 на хосте DSH с сохранением приватного ключа в `~/.dsh/keys/id_ed25519_dsh` (0600), вывод команды настройки `authorized_keys` и кнопка немедленной проверки подключения прямо в карточке настроек.
 - 2026-09-18 — Строгая fail-closed защита маршрутов (isTrustedRequest): обязательное совпадение `Origin` ↔ `Host` и `Referer` ↔ `Host`, ограничение `Sec-Fetch-Site` (`same-origin`/`none`) и допуск локального loopback. Произвольные bearer-токены и подстроки кук удалены, исключена возможность межсайтового или сетевого обхода.
 - 2026-09-18 — One-click обновление из карточки настроек: модуль registerPluginUpdater с проверкой версии через registry npm, fail-closed защита POST-запроса через isTrustedRequest, отображение версий и статуса в карточке настроек.
+- 2026-09-18 — Runtime-зависимость ssh2 с pure JS fallback: ssh2 объявлена прямой runtime-зависимостью (dependencies, а не peer) для управления SSH-сессиями и генерации ключей Ed25519. Не требует сборочного инструментария на хосте благодаря прозрачному фоллбеку на чистый JavaScript. Для офлайн-контуров зависимости кэшируются в локальном реестре.
+
