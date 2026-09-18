@@ -131,6 +131,7 @@ flowchart LR
 | `lib/vault-service.js` | Хранение секретов и проверка POSIX-прав. |
 | `lib/ssh-service.js` | SSH-аутентификация, ограниченные команды и очистка. |
 | `lib/linux-collector.js` | Сбор данных Linux и разбор снимка. |
+| `lib/plugin-updater.js` | Проверка версий и one-click обновление плагина из карточки. |
 
 ## Внутренние HTTP-маршруты
 
@@ -140,6 +141,8 @@ flowchart LR
 | --- | --- | --- |
 | GET | `/dsh-server-monitor/state` | Очищенные профили и выбранный ID. |
 | GET | `/dsh-server-monitor/snapshot?profileId=<id>` | Снимок; по умолчанию активный профиль. |
+| GET | `/dsh-server-monitor/update` | Статус текущей и доступной версии. |
+| POST | `/dsh-server-monitor/update` | Запуск one-click обновления плагина через DSH CLI. |
 | POST | `/dsh-server-monitor/profiles/save` | Создать/изменить профиль. |
 | POST | `/dsh-server-monitor/profiles/delete` | Удалить профиль и секреты. |
 | POST | `/dsh-server-monitor/profiles/active` | Выбрать профиль. |

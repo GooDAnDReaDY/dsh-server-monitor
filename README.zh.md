@@ -131,6 +131,7 @@ flowchart LR
 | `lib/vault-service.js` | 凭据保存及 POSIX 权限验证。 |
 | `lib/ssh-service.js` | SSH 认证、有界命令、连接复用和清理。 |
 | `lib/linux-collector.js` | Linux 数据采集和快照解析。 |
+| `lib/plugin-updater.js` | 版本检查以及在设置卡片中一键更新插件。 |
 
 ## 内部 HTTP 路由
 
@@ -140,6 +141,8 @@ flowchart LR
 | --- | --- | --- |
 | GET | `/dsh-server-monitor/state` | 清理后的配置和所选 ID。 |
 | GET | `/dsh-server-monitor/snapshot?profileId=<id>` | 当前快照；默认活动配置。 |
+| GET | `/dsh-server-monitor/update` | 当前及最新版本状态。 |
+| POST | `/dsh-server-monitor/update` | 通过 DSH CLI 执行一键插件在线更新。 |
 | POST | `/dsh-server-monitor/profiles/save` | 新建/更新配置。 |
 | POST | `/dsh-server-monitor/profiles/delete` | 删除配置和凭据。 |
 | POST | `/dsh-server-monitor/profiles/active` | 选择活动配置。 |

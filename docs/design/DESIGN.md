@@ -70,11 +70,12 @@
 
 ## API And Security
 
-- State, snapshot, profile management, testing, and key generation routes require a strict fail-closed check (`isTrustedRequest`): `Origin` ↔ `Host` and `Referer` ↔ `Host` matching, `Sec-Fetch-Site` (`same-origin` or `none`), and local loopback verification. Arbitrary bearer tokens or unverified cookie substrings are rejected.
+- State, snapshot, profile management, testing, key generation, and updater routes require a strict fail-closed check (`isTrustedRequest`): `Origin` ↔ `Host` and `Referer` ↔ `Host` matching, `Sec-Fetch-Site` (`same-origin` or `none`), and local loopback verification. Arbitrary bearer tokens or unverified cookie substrings are rejected.
 - Key generation route `POST /dsh-server-monitor/keys/generate` returns only the public key, the POSIX path to the private key, and the installation command; the private key is never returned over HTTP.
 - Snapshot responses contain metrics only; secrets remain inside the server-side vault and collector boundary.
 - Per-profile snapshots and collector failures are cached for 15 seconds from collection start; concurrent requests share one in-flight collection.
 - Secret-vault and key writes require verified owner-only POSIX permissions (`0600`) and fail visibly when enforcement fails.
+- Plugin update route `GET /dsh-server-monitor/update` provides current and latest versions; `POST /dsh-server-monitor/update` initiates atomic CLI upgrade with execution timeout.
 
 ## Locked Design Decisions
 
@@ -84,3 +85,4 @@
 - 2026-09-18 — Внутренние служебные материалы (AGENTS.md, index.md, docs/plans/, docs/research/, docs/testing/, docs/architecture/, .planning/) сохраняются локально на диске разработчика/агента, но снимаются с отслеживания git (`git rm --cached`) и закрываются правилами `.gitignore`. В git отслеживаются только дизайн-контракт `docs/design/` и архитектурные решения `docs/adr/`. При этом файлы никогда не удаляются физически с диска («исключать из индекса, но не удалять с диска»).
 - 2026-09-18 — Интегрированная генерация SSH-ключа в UI: создание пары Ed25519 на хосте DSH с сохранением приватного ключа в `~/.dsh/keys/id_ed25519_dsh` (0600), вывод команды настройки `authorized_keys` и кнопка немедленной проверки подключения прямо в карточке настроек.
 - 2026-09-18 — Строгая fail-closed защита маршрутов (isTrustedRequest): обязательное совпадение `Origin` ↔ `Host` и `Referer` ↔ `Host`, ограничение `Sec-Fetch-Site` (`same-origin`/`none`) и допуск локального loopback. Произвольные bearer-токены и подстроки кук удалены, исключена возможность межсайтового или сетевого обхода.
+- 2026-09-18 — One-click обновление из карточки настроек: модуль registerPluginUpdater с проверкой версии через registry npm, fail-closed защита POST-запроса через isTrustedRequest, отображение версий и статуса в карточке настроек.
