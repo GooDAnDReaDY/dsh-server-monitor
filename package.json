@@ -1,6 +1,6 @@
 {
   "name": "@goodandready/dsh-server-monitor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Standalone read-only Linux server monitoring sidebar for DeepSeek Harness",
   "type": "module",
   "main": "lib/index.js",
@@ -24,6 +24,7 @@
   "keywords": [
     "dsh",
     "dsh-plugin",
+    "deepseek-harness",
     "server-monitor",
     "linux",
     "ssh"
@@ -43,7 +44,10 @@
     },
     "client": {
       "platform": "web",
-      "inject": ["@deepseek-ai/dsh-client-locale", "@deepseek-ai/dsh-client-ui-settings"]
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
     }
   },
   "dependencies": {

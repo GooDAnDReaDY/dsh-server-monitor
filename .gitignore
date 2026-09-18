@@ -136,13 +136,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Private development and operational documentation (kept locally)
-.planning/
-AGENTS.md
-index.md
-docs/architecture/
-docs/plans/
-docs/research/
-docs/testing/
-openwiki/
 *.out
+.worktrees/
