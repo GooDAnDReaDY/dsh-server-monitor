@@ -74,3 +74,4 @@
 - 2026-09-16 — Separate plugin-owned profiles and credentials; reason: plugins are independent and must not share connection ownership.
 - 2026-09-16 — Read-only Linux MVP with 15-second visible polling; reason: deliver safe current status before history, alerts or actions.
 - 2026-09-16 — Native right sidebar primary surface with legacy compatibility; reason: use current DSH sidebar API while preserving older profiles.
+- 2026-09-18 — Внутренние проектные материалы (AGENTS.md, index.md, docs/plans/, docs/architecture/, .planning/) хранятся и версионируются в Gitea; из npm-пакета исключаются строгим allowlist package.json.files, а из публичного GitHub — санитизированным релизным пайплайном без удаления файлов с диска или из репозитория Gitea.
