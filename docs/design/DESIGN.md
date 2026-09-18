@@ -11,7 +11,7 @@
 
 - Web/UI: native DSH right sidebar monitoring tab.
 - Legacy UI: optional dsh-better-sidebar tab when native sidebar services are unavailable.
-- Settings: settings.plugin.item card for this plugin's own server profiles, including integrated SSH key generation and one-click remote setup command.
+- Settings: `plugins.row.config` (key `@goodandready/dsh-server-monitor#dsh-server-monitor`) renders the settings form on the plugin's own page in Plugins; the page supplies title, icon, breadcrumb and paddings, so the form is drawn bare. The legacy `settings.plugin.item` card is kept as a fallback for older cores. Both show this plugin's server profiles, including integrated SSH key generation and one-click remote setup command.
 - API: trusted same-origin snapshot reads, profile-management routes, and protected key generation endpoint (`POST /dsh-server-monitor/keys/generate`). Snapshot collection is single-flight and capped at one start per profile per 15 seconds; save/delete invalidates that profile cache.
 - Actions: profile add/edit/delete/test and SSH key generation; monitored server actions are out of scope.
 - Documentation: English, Chinese, and Russian project guides; UI is English/Chinese with Russian translations supplied by dsh-russian-lang.
