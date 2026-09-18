@@ -69,6 +69,9 @@ The plugin UI ships English and Chinese dictionaries and uses the DSH locale ser
 - A DSH web profile with the plugin installed and SSH reachability from DSH to each Linux host.
 - A remote account allowed to run standard read-only system commands. Docker/Podman data requires permission to query that runtime.
 - A private-key path must be readable by the DSH service account on the DSH host.
+- **Runtime Dependency (`ssh2`)**: Requires `ssh2` (`^1.17.0`) in `dependencies` (not peer) for SSH protocol handling and Ed25519 keypair generation. It is automatically installed from the package registry.
+- **Pure JavaScript Fallback**: No C/C++ compiler or Python build toolchain is required on the host. While `ssh2` includes optional native acceleration modules (`cpu-features`, `sshcrypto`), it falls back automatically and cleanly to a pure JavaScript implementation if native build tools are unavailable.
+- **Air-Gapped / Offline Environments**: When installing from a `.tgz` tarball in an isolated network, ensure `ssh2` and its transitive dependencies are available in your local package manager store or internal mirror.
 
 ## Install
 
