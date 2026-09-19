@@ -75,6 +75,25 @@ test('legacy placements are preserved as fallback', () => {
   assert.equal(legacy.options.key, 'dsh-server-monitor');
 });
 
+test('the plugins page list seat carries the row id, a static label and the shared view', () => {
+  const client = loadClient();
+  const { ctx, registered, injected } = capture();
+  client._test.register(ctx);
+
+  assert.ok(injected.includes('plugins.item'), 'plugins.item is wired for the current core');
+  const item = registered.find((entry) => entry.options.name === 'plugins.item');
+  assert.ok(item, 'plugins.item must be registered');
+  assert.equal(item.options.id, 'dsh-server-monitor', 'the list seat is keyed by the cordis.patch.yml row id');
+  assert.equal(item.options.order, 60);
+  assert.equal(item.options.locale, 'dsh-server-monitor');
+  // The core draws the label itself and does not pass a translator: a label that
+  // reads ctx.t throws and takes the whole client batch down.
+  assert.equal(typeof item.options.label, 'function');
+  assert.equal(item.options.label(), 'Server Monitor');
+  assert.equal(item.component, client._test.PluginConfigView, 'the view-aware settings component is reused');
+  assert.equal(item.options.inject().ctx, ctx);
+});
+
 test('row view renders a summary line and a bare page form', () => {
   const client = loadClient();
   const View = client._test.PluginConfigView;

@@ -4,6 +4,18 @@ All notable changes to `@goodandready/dsh-server-monitor` are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5]
+
+### Fixed
+- **Settings reachable again on the plugin's own page**: the current DSH core
+  (0.1.6-alpha.2) renders a plugin's configuration page only for entries registered
+  in the plugin-list seat `plugins.item` — that is how `dsh-agentrouter` and
+  `dsh-agent-orchestrator` show their settings. The view-aware card is now registered
+  there as well (`id: 'dsh-server-monitor'`, order 60, static label), with the row
+  seat and the legacy card kept as fallbacks.
+- The row-seat test file gained a case asserting the new registration (`id`, `order`,
+  static `label`, component and `inject`).
+
 ## [0.1.4]
 
 ### Added
