@@ -4,6 +4,22 @@ All notable changes to `@goodandready/dsh-server-monitor` are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6]
+
+### Fixed
+- **UI profile selection retention**: use `useRef` to track active server profile across polling intervals, eliminating race conditions where background timer reset dropdown selection back to default (#30).
+- **Redundant polling requests**: background 15s timer now polls only `/snapshot` instead of issuing sequential `/state` and `/snapshot` requests (#30).
+- **Manual refresh cache bypass**: clicking "Refresh" in the monitor UI passes `force=1` to bypass the 15-second cache and trigger an immediate fresh metrics collection (#35).
+- **Request body size enforcement**: `readBody` now strictly limits incoming payload size to `256 KB` (`MAX_BODY_BYTES`), returning HTTP 413 Payload Too Large on excess to prevent heap exhaustion and OOM DoS (#31).
+- **SSH connection handshake race condition**: concurrent calls to `SshService.getConnection` for the same profile now coalesce onto a single in-flight connection promise, preventing duplicate TCP sockets and socket leaks (#33).
+
+### Added
+- **SSH connection idle reaper**: cached SSH connections now automatically disconnect after 2 minutes (`120_000 ms`) of inactivity, freeing remote sshd sessions and avoiding persistent background TCP keepalives when the monitor is closed (#34).
+
+### Performance
+- **Vault credential caching**: `VaultService.readAll` now caches parsed credentials in memory with write-through invalidation, eliminating redundant synchronous `chmodSync`, `statSync`, and `readFileSync` calls during profile listing (#32).
+- **Linear SSH streaming**: `execWithConnection` streams remote command output using incremental byte counting and chunk subarrays, eliminating quadratic $\mathcal{O}(N^2)$ string re-allocations and UTF-8 byte recounting on every chunk (#36).
+
 ## [0.1.5]
 
 ### Fixed
