@@ -4,6 +4,26 @@ All notable changes to `@goodandready/dsh-server-monitor` are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7]
+
+### Added
+- SSH profiles for Linux, macOS, BSD, and Windows OpenSSH. A POSIX probe falls back to PowerShell once when the remote host has no usable `sh`.
+- Tags and text search for the server list.
+- A jump host: one saved profile can connect through another saved profile. A cycle is rejected.
+- Import of concrete hosts from the local SSH config. Wildcard and git hosts are skipped.
+- Sparklines for the last hour and stored history for CPU, memory, disk, and network. A one-time `sar` backfill runs when `sar` is installed.
+- Month traffic from positive counter deltas. A reboot does not subtract.
+- A Terminal button that opens one interactive SSH session in the browser. The session is accepted only from loopback.
+- Agent tools that list saved hosts and run one bounded command. Host listings omit passwords and private keys.
+
+### Fixed
+- The plugin settings page keeps its own SSH-import state, so opening the plugin no longer throws a missing-state error.
+- The terminal socket dependency is the patched `ws` release.
+
+### Changed
+- Background probes stay read-only. The terminal is an explicit interactive session.
+- CPU history is a percent of the core count when the core count is known.
+
 ## [0.1.6]
 
 ### Fixed

@@ -39,12 +39,12 @@
 
 ## MVP 范围
 
-- 添加和管理多个 Linux SSH 配置。
+- 添加和管理 Linux、macOS、BSD 和 Windows OpenSSH 的 SSH 配置。
 - 支持 SSH 私钥（内联内容或 DSH 主机上的密钥路径）以及密码认证。
 - 直接在 UI 中生成 Ed25519 SSH 密钥对，提供一键复制的目标服务器部署命令并支持立即测试连接。
 - 显示主机、CPU、内存、交换空间、磁盘、进程、容器、网络和监听端口的当前状态。
 - 侧边栏可见时每 15 秒刷新一次。
-- 只读监控：不会管理远程服务、进程或容器。历史记录、图表和告警不属于 MVP。
+- 后台探测不会管理远程服务、进程或容器。最近一小时画成迷你图，操作者可以打开一个交互终端。
 
 ## 凭据边界
 
@@ -85,7 +85,7 @@ dsh plugin --profile web add @goodandready/dsh-server-monitor
 
 ## 配置参考
 
-请在 DSH 设置卡片中管理配置。设置仅包含连接元数据；不要将密码、私钥内容或口令写入设置或配置文件。
+请在 DSH 设置卡片中管理配置。从 SSH 配置导入会读取 `~/.ssh/config`，跳过通配和 git 主机，并让你选择要添加的主机。代理工具 `server_monitor_hosts` 和 `server_monitor_exec` 列出不含密钥的主机，并在 1–300 秒超时内执行一条非交互命令。设置仅包含连接元数据；不要将密码、私钥内容或口令写入设置或配置文件。
 
 | 字段 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -97,7 +97,11 @@ dsh plugin --profile web add @goodandready/dsh-server-monitor
 | `profiles[].username` | 字符串 | `root` | 远程账户；建议限制权限。 |
 | `profiles[].authType` | 字符串 | `key` | `key` 或 `password`。 |
 | `profiles[].privateKeyPath` | 字符串 | 空 | DSH 主机上的可选密钥路径。 |
+| `profiles[].shell` | 字符串 | `posix` | `posix` 把探测脚本通过标准输入交给 `/bin/sh -s`。`powershell` 使用 `powershell.exe -EncodedCommand`。 没有 `/proc/meminfo` 时用 sysctl 采集 macOS 和 BSD。Windows 请选择 `powershell`。 Terminal 按钮打开仅限本机的 xterm 会话。 |
+| `profiles[].tags` | 字符串列表 | 空 | 逗号分隔的标签。服务器列表可按一个标签和搜索文本过滤。 |
+| `profiles[].proxyJump` | 字符串 | 空 | 另一个配置的 ID，或 `user@host:port`。连接经该跳板建立。 |
 | `activeProfileId` | 字符串 | 空 | 活动配置 ID。 |
+| `pollIntervalSec` | 数字 | `30` | 后台探测间隔：`10`、`30`、`60` 或 `300`。其他值使用 `30`。 |
 
 秘密值保存在 DSH 主机上由插件管理的保险库中。POSIX 系统要求文件权限验证为仅所有者可访问（`0600`）。
 
@@ -109,7 +113,7 @@ dsh plugin --profile web add @goodandready/dsh-server-monitor
 
 ## 采集内容
 
-有界只读采集器获取主机/操作系统/内核/CPU、负载和运行时间、内存与 swap、文件系统使用情况、最多 12 个 CPU 占用靠前的进程、运行中的 Docker 或 Podman 容器、网络计数器及 TCP/UDP 监听端口（使用 `ss`，否则回退到 `netstat`）。命令、运行时或权限不可用时，相应区块可能为空。
+有界只读采集器获取主机/操作系统/内核/CPU、负载和运行时间、内存与 swap、文件系统使用情况、最多 12 个 CPU 占用靠前的进程、运行中的 Docker 或 Podman 容器、网络计数器以及在主机上测得的一秒接收/发送速率及 TCP/UDP 监听端口（使用 `ss`，否则回退到 `netstat`）。命令、运行时或权限不可用时，相应区块可能为空。服务器卡片显示最近的 SSH 错误和探测延迟（毫秒）。历史保存在插件指标目录中，包含原始、1 分钟、15 分钟和 1 小时样本。`GET /dsh-server-monitor/history` 按时间范围返回一个字段。主机安装了 sysstat 时，第一次成功探测会从 `sar` 复制前一天的 CPU 和内存。本月流量按 UTC 日历月累加字节差；重启后计数器回绕不会倒扣，下月 1 日重新开始。每张服务器卡片用 SVG 画出最近一小时的 CPU、内存和磁盘。间隔超过 90 秒的点会断开折线。已知 CPU 核数时，CPU 按核数换算成百分比保存。
 
 ## 架构
 
@@ -133,12 +137,15 @@ flowchart LR
 | `lib/profile.js` | 配置规范化和校验。 |
 | `lib/vault-service.js` | 凭据保存及 POSIX 权限验证。 |
 | `lib/ssh-service.js` | SSH 认证、有界命令、连接复用和清理。 |
-| `lib/linux-collector.js` | Linux 数据采集和快照解析。 |
+| `lib/linux-collector.js` | 快照解析和 Linux `/proc` 探测。 |
+| `lib/snapshot-commands.js` | macOS、BSD 和 Windows 的采集命令。 |
+| `lib/pty-bridge.js` | 仅限本机的终端升级和 xterm 资源。 |
+| `lib/agent-tools.js` | 列出主机并执行一条有界命令的代理工具。 |
 | `lib/plugin-updater.js` | 版本检查以及在设置卡片中一键更新插件。 |
 
 ## 内部 HTTP 路由
 
-这些路由供 DSH 客户端使用并受可信请求检查保护，不是公开或远程管理 API。
+这些路由只接受 loopback 客户端。Origin、Referer 和 Sec-Fetch-Site 只用于校验这台本机浏览器，不能让另一台机器通过。它们不是公开或远程管理 API。
 
 | 方法 | 路径 | 用途 |
 | --- | --- | --- |
@@ -147,16 +154,20 @@ flowchart LR
 | GET | `/dsh-server-monitor/update` | 当前及最新版本状态。 |
 | POST | `/dsh-server-monitor/update` | 通过 DSH CLI 执行一键插件在线更新。 |
 | POST | `/dsh-server-monitor/profiles/save` | 新建/更新配置。 |
-| POST | `/dsh-server-monitor/profiles/delete` | 删除配置和凭据。 |
+| POST | `/dsh-server-monitor/profiles/delete` | 删除配置、凭据、SSH 会话和本地指标文件。 |
 | POST | `/dsh-server-monitor/profiles/active` | 选择活动配置。 |
 | POST | `/dsh-server-monitor/keys/generate` | 在 `~/.dsh/keys` 中生成 Ed25519 密钥对（权限 0600），并返回公钥与安装命令。 |
 | POST | `/dsh-server-monitor/test` | 测试 SSH 连接。 |
+| GET | `/dsh-server-monitor/history` | 一个配置和一个字段的历史采样。 |
+| GET | `/dsh-server-monitor/profiles/import-ssh-config` | 本地 SSH 配置中的具体主机。 |
+| GET | `/dsh-server-monitor/vendor/*` | 终端使用的 xterm 文件，仅限本机。 |
+| WebSocket | `/dsh-server-monitor/pty` | 一个已保存主机的交互 shell，仅限本机。 |
 
 快照按配置缓存 15 秒，并发请求共享同一次采集；保存或删除会清除该配置缓存。
 
 ## 安全、支持与许可证
 
-插件独立管理 SSH 凭据，不将秘密返回浏览器，仅运行只读监控命令。仅支持 Linux；MVP 不含历史、图表、告警或远程操作。
+插件独立管理 SSH 凭据，不把秘密返回浏览器。后台探测是只读的。Terminal 按钮打开一个交互 SSH 会话，升级只接受本机 loopback。不包含告警。
 
 - 问题和建议：[GitHub Issues](https://github.com/GooDAnDReaDY/dsh-server-monitor/issues)
 - 许可证：[MIT](LICENSE)

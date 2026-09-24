@@ -39,12 +39,12 @@ A standalone, read-only Linux server monitor for the DeepSeek Harness sidebar. T
 
 ## MVP scope
 
-- Add and manage multiple Linux SSH profiles.
+- Add and manage SSH profiles for Linux, macOS, BSD, and Windows OpenSSH.
 - Connect with an SSH private key (inline or server-side key path) or password authentication.
 - Generate Ed25519 SSH keys directly in the UI, copy a ready-to-use setup command for target servers, and verify the connection.
 - Show current host, CPU, memory, swap, disk, process, container, network, and listening-port data.
 - Refresh every 15 seconds while the sidebar is visible.
-- Read-only monitoring: the plugin does not manage remote services, processes, or containers. History, charts, and alerts are not part of the MVP.
+- Background probes do not manage remote services, processes, or containers. The last hour is drawn as sparklines, and the operator can open one interactive terminal.
 
 ## Credential boundary
 
@@ -85,7 +85,7 @@ Follow the CLI prompts. In the plugin settings card, add a server, choose key or
 
 ## Configuration
 
-Manage profiles in the DSH settings card. Settings contain connection metadata only: do not place passwords, private-key contents, or passphrases in settings or config files.
+Manage profiles in the DSH settings card. Import from SSH config reads `~/.ssh/config`, skips wildcard and git hosts, and lets you choose which hosts to add. The agent tools `server_monitor_hosts` and `server_monitor_exec` list hosts without secrets and run one non-interactive command with a 1–300 second timeout. Settings contain connection metadata only: do not place passwords, private-key contents, or passphrases in settings or config files.
 
 | Field | Type | Default | Meaning |
 | --- | --- | --- | --- |
@@ -97,7 +97,11 @@ Manage profiles in the DSH settings card. Settings contain connection metadata o
 | `profiles[].username` | string | `root` | Remote account; prefer restricted permissions. |
 | `profiles[].authType` | string | `key` | `key` or `password`. |
 | `profiles[].privateKeyPath` | string | empty | Optional key path on the DSH host. |
+| `profiles[].shell` | string | `posix` | `posix` sends probes to `/bin/sh -s` on stdin. `powershell` uses `powershell.exe -EncodedCommand`. Without `/proc/meminfo`, macOS and BSD are collected with sysctl. Choose `powershell` for Windows. The Terminal button opens a loopback xterm session. |
+| `profiles[].tags` | string list | empty | Comma-separated labels. The server list can filter by one tag and by search text. |
+| `profiles[].proxyJump` | string | empty | Another profile id, or `user@host:port`. The connection is opened through that bastion. |
 | `activeProfileId` | string | empty | Selected profile ID. |
+| `pollIntervalSec` | number | `30` | Background probe interval: `10`, `30`, `60`, or `300`. Other values use `30`. |
 
 The settings card stores secret values in the plugin-owned vault on the DSH host. POSIX vault operations require verified owner-only permissions (`0600`).
 
@@ -109,7 +113,7 @@ This key path can also be configured in other local plugins such as `dsh-remote-
 
 ## Collected data
 
-The bounded, read-only collector reports host/OS/kernel/CPU, load and uptime, memory and swap, mounted filesystem usage, up to 12 CPU-heavy processes, running Docker or Podman containers, network byte/packet counters, and listening TCP/UDP ports (`ss`, falling back to `netstat`). A section can be empty if a command, runtime, or permission is unavailable.
+The bounded, read-only collector reports host/OS/kernel/CPU, load and uptime, memory and swap, mounted filesystem usage, up to 12 CPU-heavy processes, running Docker or Podman containers, network byte/packet counters and the one-second Rx/Tx rate measured on the host, and listening TCP/UDP ports (`ss`, falling back to `netstat`). A section can be empty if a command, runtime, or permission is unavailable. The server card shows the last SSH error and the probe latency in milliseconds. History is stored under the plugin metrics directory as raw, 1-minute, 15-minute and 1-hour samples, and `GET /dsh-server-monitor/history` returns one field for a time range. The first successful probe copies the previous day of CPU and memory from `sar` when sysstat is installed. Month traffic adds byte deltas for the UTC calendar month, ignores a counter drop after reboot, and starts again on the first day of the next month. Each server card draws the last hour of CPU, memory and disk as an SVG sparkline. A gap longer than 90 seconds breaks the line. CPU is stored as a percent of the core count when that count is known.
 
 ## Architecture
 
@@ -133,12 +137,15 @@ flowchart LR
 | `lib/profile.js` | Profile normalization and validation. |
 | `lib/vault-service.js` | Credential storage and POSIX permission verification. |
 | `lib/ssh-service.js` | SSH authentication, bounded commands, reuse and cleanup. |
-| `lib/linux-collector.js` | Linux collection and snapshot parsing. |
+| `lib/linux-collector.js` | Snapshot parsing and the Linux `/proc` probe. |
+| `lib/snapshot-commands.js` | macOS, BSD, and Windows collection commands. |
+| `lib/pty-bridge.js` | Loopback terminal upgrade and xterm assets. |
+| `lib/agent-tools.js` | Agent tools that list hosts and run one bounded command. |
 | `lib/plugin-updater.js` | Version checking and one-click in-card plugin updates. |
 
 ## Internal HTTP routes
 
-These DSH-client routes are protected by a trusted-request check; they are not a public or remote-management API.
+These DSH-client routes accept only a loopback client. Origin, Referer and Sec-Fetch-Site are checked for that local browser and do not admit another machine. They are not a public or remote-management API.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -147,16 +154,20 @@ These DSH-client routes are protected by a trusted-request check; they are not a
 | GET | `/dsh-server-monitor/update` | Current and latest version status. |
 | POST | `/dsh-server-monitor/update` | Run one-click plugin update via DSH CLI. |
 | POST | `/dsh-server-monitor/profiles/save` | Create/update a profile. |
-| POST | `/dsh-server-monitor/profiles/delete` | Delete profile and stored secrets. |
+| POST | `/dsh-server-monitor/profiles/delete` | Delete profile, stored secrets, the SSH session and local metric files. |
 | POST | `/dsh-server-monitor/profiles/active` | Select active profile. |
 | POST | `/dsh-server-monitor/keys/generate` | Generate Ed25519 keypair in `~/.dsh/keys` (0600) and return public key + setup command. |
 | POST | `/dsh-server-monitor/test` | Test SSH connection. |
+| GET | `/dsh-server-monitor/history` | Stored samples for one profile and field. |
+| GET | `/dsh-server-monitor/profiles/import-ssh-config` | Concrete hosts from the local SSH config. |
+| GET | `/dsh-server-monitor/vendor/*` | xterm files for the terminal, loopback only. |
+| WebSocket | `/dsh-server-monitor/pty` | Interactive shell for one saved host, loopback only. |
 
 Snapshots are cached per profile for 15 seconds from collection start; concurrent requests share a collection. Save/delete invalidates that profile’s cache.
 
 ## Security and support
 
-The plugin owns its SSH credentials, never returns secrets to the browser, and only runs read-only monitoring commands. Linux only; history, charts, alerts, and remote actions are not in the MVP.
+The plugin owns its SSH credentials and never returns secrets to the browser. Background probes are read-only. The Terminal button opens one interactive SSH session and accepts the upgrade only from loopback. Alerts are not included.
 
 - Issues: [GitHub Issues](https://github.com/GooDAnDReaDY/dsh-server-monitor/issues)
 - License: [MIT](LICENSE)
