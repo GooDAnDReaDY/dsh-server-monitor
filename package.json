@@ -1,6 +1,6 @@
 {
   "name": "@goodandready/dsh-server-monitor",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "SSH server monitor and terminal sidebar for DeepSeek Harness",
   "type": "module",
   "main": "lib/index.js",

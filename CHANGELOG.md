@@ -4,6 +4,11 @@ All notable changes to `@goodandready/dsh-server-monitor` are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8]
+
+### Fixed
+- **Plugin lifecycle route cleanup**: HTTP routes, PTY WebSocket upgrade handlers, and updater endpoints are now registered as effect-owned disposers (`sctx.effect(...)` and `sctx.on('dispose', ...)`). Disposing the plugin cleanly unregisters all endpoints from `webServer` and terminates active PTY WebSocket connections, preventing route and port collisions on plugin reload or configuration re-apply (#70).
+
 ## [0.1.7]
 
 ### Added
