@@ -4,6 +4,16 @@ All notable changes to `@goodandready/dsh-server-monitor` are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9]
+
+### Fixed
+- **SSH Stream & WebSocket Error Handling**: Added explicit `'error'` event listeners on SSH channel streams and WebSockets in `bindShell` to prevent Node.js `uncaughtException` crashes when connections are interrupted or dropped (#73).
+- **Corrupted Metric Store Resilience**: Wrapped JSON parsing of `.jsonl` points, aggregate files, and monthly bandwidth data in `try/catch` handlers to prevent persistent 500 errors and crash loops from corrupted or truncated metric files (#74).
+- **Concurrent Polling & Disk Error Isolation**: `MetricRecorder.tick()` now polls remote servers concurrently using `Promise.allSettled()`, avoiding poll interval delays caused by unreachable servers, and separates local disk write errors from server online status (#75).
+- **Agent Tool Exception Handling**: `server_monitor_exec` agent tool now catches SSH execution errors and returns structured error descriptions to LLM agents rather than causing unhandled promise rejections (#76).
+- **Terminal UI Clean Lifecycle & Error Feedback**: Added `data-dsh-plugin` attributes to injected terminal styles/links and attached `onerror`/`onclose` handlers to the browser terminal WebSocket for clear visual feedback (#77).
+- **Profile ID Character Sanitization**: Enforced alphanumeric and hyphen/underscore safe ID pattern (`/^[A-Za-z0-9_-]+$/`) across `profile.js` and `MetricStore`, automatically sanitizing imported hostnames containing dots or colons (#78).
+
 ## [0.1.8]
 
 ### Fixed
