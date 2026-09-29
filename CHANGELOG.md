@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.12] - 2026-09-30
+
+### Added
+- **AI Incident Doctor** (#83): Added `server_monitor_diagnose` agent tool and `diagnoseIncident(profile, type)` in `lib/ssh-service.js`. Provides targeted diagnostic recipes for `disk`, `cpu`/`load`, `memory`/`ram`, and system summary to investigate incidents in a single non-interactive step.
+- **Systemd Services Management** (#84): Added `listServices(profile)` and `manageService(profile, service, action)` in `lib/ssh-service.js`, REST routes `/dsh-server-monitor/services` and `/dsh-server-monitor/services/action`, agent tools `server_monitor_services` and `server_monitor_service`, and interactive services section in dashboard displaying active/failed units with one-click restart.
+- **Process Explorer & Safe Process Termination** (#85): Added `listProcesses(profile, { limit, sortBy })` and `killProcess(profile, pid, signal)` in `lib/ssh-service.js`, REST endpoints `/dsh-server-monitor/processes` and `/dsh-server-monitor/processes/kill`, agent tools `server_monitor_processes` and `server_monitor_kill`, and termination buttons in dashboard with PID <= 1 kernel protection.
+
+## 0.1.10
+
+### Fixed
+- **Peer gate on DSH 0.2.0-rc.1** (#58): DSH skips a profile bundle whose `peerDependencies` exclude the running version, so this plugin was absent from the profile with no error in the UI. Every `@deepseek-ai/dsh-*` peer now names both the 0.1.7-rc.2 and 0.2.0-rc.1 lines, because semver does not admit a prerelease of the next minor into a range that does not name it.
+
 All notable changes to `@goodandready/dsh-server-monitor` are recorded here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
