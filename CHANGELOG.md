@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.14] - 2026-09-30
+
+### Fixed
+- **DSH 0.2.0-rc.1 Settings Contract** (#72):
+  - Added `.volatile()` flags to user-editable leaves: `profiles` array, `activeProfileId`, `pollIntervalSec` in `Config` schema, ensuring DSH `volatileForm()` discovers and serves the settings form live while keeping secrets out of the volatile schema.
+  - Added `configForms` to client inject (`['slots', 'locale', 'configForms']`).
+  - Wired `SettingsCard` to live snapshot and subscription via `ctx.configForms.get('dsh-server-monitor')` with fallback to `/state`.
+  - Gated plugin slots inside `ctx.configForms.whileServed(['dsh-server-monitor'], ...)`.
+  - Retired dead `settings.plugin.item` slot and replaced legacy `settings.register` with `settings.configure({ auto: false })` and `loader/volatile-update` / `settings/document-updated` event sync.
+
 ## [0.1.12] - 2026-09-30
 
 ### Added
